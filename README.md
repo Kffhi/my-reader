@@ -1,2 +1,2 @@
-# items
-个人小项目集合
+# MyReader
+web阅读器

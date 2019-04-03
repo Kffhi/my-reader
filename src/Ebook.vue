@@ -1,55 +1,122 @@
 <template>
     <div class="ebook">
-        <div class="title-wrapper">
-            <div class="left">
-                <span class="icon-back icon"></span>
-            </div>
-            <div class="right">
-                <div class="icon-wrapper">
-                    <span class="icon-cart icon"></span>
-                </div>
-                <div class="icon-wrapper">
-                    <span class="icon-person icon"></span>
-                </div>
-                <div class="icon-wrapper">
-                    <span class="icon-more icon"></span>
-                </div>
-            </div>
-        </div>
+        <TitleBar :ifTitleAndMenuShow="ifTitleAndMenuShow"></TitleBar>
         <div class="read-wrapper">
             <div id="read">
                 <div class="mask">
                     <div class="left" @click="prevPage"></div>
-                    <div class="center"></div>
+                    <div class="center" @click="toggleTitleAndMenu"></div>
                     <div class="right" @click="nextPage"></div>
                 </div>
             </div>
         </div>
-        <div class="menu-wrapper">
-            <div class="icon-wrapper">
-                <span class="icon-menu icon"></span>
-            </div>
-            <div class="icon-wrapper">
-                <span class="icon-progress icon"></span>
-            </div>
-            <div class="icon-wrapper">
-                <span class="icon-bright icon"></span>
-            </div>
-            <div class="icon-wrapper">
-                <span class="icon-a icon">A</span>
-            </div>
-        </div>
+        <MenuBar :ifTitleAndMenuShow="ifTitleAndMenuShow"
+                 ref="menuBar"
+                 :fontSizeList="fontSizeList"
+                 :defaultFontSize="defaultFontSize"
+                 @setFontSize="setFontSize"
+                 :themeList="themeList"
+                 :defaultTheme="defaultTheme"
+                 @setTheme="setTheme"
+                 :bookAvailable="bookAvailable"
+                 @onProgressChange="onProgressChange"
+
+        >
+        </MenuBar>
     </div>
 </template>
 
 <script>
     import Epub from 'epubjs'
+    import TitleBar from './components/TitleBar'
+    import MenuBar from './components/MenuBar'
 
     const DOWNLOAD_URL = '/2018_Book_AgileProcessesInSoftwareEngine.epub'
     global.ePub = Epub
     export default {
         name: "Ebook",
+        components: {
+            TitleBar, MenuBar
+        },
+        data() {
+            return {
+                ifTitleAndMenuShow: false,
+                fontSizeList: [
+                    {fontSize: 12},
+                    {fontSize: 14},
+                    {fontSize: 16},
+                    {fontSize: 18},
+                    {fontSize: 20},
+                    {fontSize: 22},
+                    {fontSize: 24},
+                ],
+                defaultFontSize: 16,
+                themeList: [
+                    {
+                        name: 'default',
+                        style: {
+                            body: {
+                                'color': '#000', 'background': '#fff'
+                            }
+                        }
+                    },
+                    {
+                        name: 'eye',
+                        style: {
+                            body: {
+                                'color': '#000', 'background': '#ceeaba'
+                            }
+                        }
+                    },
+                    {
+                        name: 'night',
+                        style: {
+                            body: {
+                                'color': '#fff', 'background': '#000'
+                            }
+                        }
+                    },
+                    {
+                        name: 'gold',
+                        style: {
+                            body: {
+                                'color': '#000', 'background': 'rgb(241, 236, 226)'
+                            }
+                        }
+                    }
+                ],
+                defaultTheme: 0,
+                // 图书是否可用状态
+                bookAvailable: false
+            }
+        },
         methods: {
+            onProgressChange(progress){
+                const percentage = progress / 100
+                const location = percentage > 0 ? this.locations.cfiFromPercentage(percentage) : 0
+                this.rendition.display(location)
+            },
+            setTheme(index) {
+                this.themes.select(this.themeList[index].name)
+                this.defaultTheme = index
+            },
+            registerTheme() {
+                this.themeList.forEach(theme => {
+                    this.themes.register(theme.name, theme.style)
+                })
+            },
+            setFontSize(fontSize) {
+                this.defaultFontSize = fontSize
+                if (this.themes) {
+                    this.themes.fontSize(fontSize + 'px')
+                }
+            },
+            toggleTitleAndMenu() {
+                this.ifTitleAndMenuShow = !this.ifTitleAndMenuShow
+                if (!this.ifTitleAndMenuShow) {
+                    this.$refs.menuBar.hideSetting()
+                }
+            },
             prevPage() {
                 if (this.rendition) {
                     this.rendition.prev()
@@ -72,6 +139,21 @@
                 })
                 // 通过Rendtion.display渲染电子书
                 this.rendition.display()
+                // 获取Theme对象
+                this.themes = this.rendition.themes
+                // 设置默认字体
+                this.setFontSize(this.defaultFontSize)
+                // 注册主题
+                this.registerTheme()
+                this.setTheme(this.defaultTheme)
+                // 获取Locations对象
+                // 通过epubjs的钩子函数实现
+                this.book.ready.then(() => {
+                    return this.book.locations.generate()
+                }).then(result => {
+                    this.locations = this.book.locations
+                    this.bookAvailable = true
+                })
             }
         },
         mounted() {
@@ -85,36 +167,6 @@
 
     .ebook {
         position: relative;
-
-        .title-wrapper {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: px2rem(48);
-            z-index: 101;
-            background-color: white;
-            display: flex;
-            box-shadow: 0 px2rem(8) px2rem(8) rgba(0, 0, 0, .15);
-
-            .left {
-                flex: 0 0 px2rem(60);
-                @include center
-            }
-
-            .right {
-                flex: 1;
-                display: flex;
-                justify-content: flex-end;
-                .icon-wrapper {
-                    flex: 0 0 px2rem(40);
-                    @include center;
-                    .icon-cart{
-                        font-size: px2rem(22);
-                    }
-                }
-            }
-        }
 
         .read-wrapper {
             .mask {
@@ -136,27 +188,6 @@
 
                 .right {
                     flex: 0 0 px2rem(100);
-                }
-            }
-        }
-        .menu-wrapper{
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            height: px2rem(48);
-            z-index: 101;
-            background-color: white;
-            display: flex;
-            box-shadow: 0 px2rem(-8) px2rem(8) rgba(0, 0, 0, .15);
-            .icon-wrapper{
-                flex: 1;
-                @include center;
-                .icon-progress{
-                    font-size: px2rem(28);
-                }
-                .icon-bright{
-                    font-size: px2rem(24);
                 }
             }
         }

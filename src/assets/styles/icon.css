@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?4eyclc');
-  src:  url('fonts/icomoon.eot?4eyclc#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?4eyclc') format('truetype'),
-    url('fonts/icomoon.woff?4eyclc') format('woff'),
-    url('fonts/icomoon.svg?4eyclc#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?97tqjn');
+  src:  url('fonts/icomoon.eot?97tqjn#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?97tqjn') format('truetype'),
+    url('fonts/icomoon.woff?97tqjn') format('woff'),
+    url('fonts/icomoon.svg?97tqjn#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -24,29 +24,28 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-account:before {
-  content: "\e900";
-  color: #515151;
-}
-.icon-brightness2:before {
+.icon-back:before {
   content: "\e901";
 }
-.icon-ellipsis-v:before {
+.icon-bright:before {
   content: "\e902";
 }
-.icon-icon_dingtalk_line:before {
+.icon-cart:before {
   content: "\e903";
+  color: #666;
 }
-.icon-icon_roundreduce:before {
-  content: "\e904";
+.icon-menu:before {
+  content: "\e909";
 }
-.icon-icon_threeline_fill:before {
-  content: "\e905";
+.icon-more:before {
+  content: "\e90a";
 }
-.icon-previous_step:before {
-  content: "\e906";
+.icon-person:before {
+  content: "\e90b";
 }
-.icon-shopping-cart-fill:before {
-  content: "\e907";
-  color: #707070;
+.icon-progress:before {
+  content: "\e90c";
+}
+.icon-share:before {
+  content: "\e90d";
 }

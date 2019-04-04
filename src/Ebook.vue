@@ -22,7 +22,8 @@
                  @onProgressChange="onProgressChange"
                  :navigation="navigation"
                  @jumpTo="jumpTo"
-
+                 :parentProgress="progress"
+                 @showProgress="showProgress"
         >
         </MenuBar>
     </div>
@@ -90,21 +91,33 @@
                 ],
                 defaultTheme: 0,
                 // 图书是否可用状态
-                bookAvailable: false
+                bookAvailable: false,
+                navigation: {},
+                progress: 0
             }
         },
         methods: {
+            showProgress() {
+                // 获取当前的位置信息
+                const currentLocation = this.rendition.currentLocation()
+                // 获取当前位置进度的百分比
+                this.progress = this.locations.percentageFromCfi(currentLocation.start.cfi)
+                // 转化成0-100的数字
+                this.progress = Math.round(this.progress * 100)
+            },
             // 根据链接跳转至指定位置
-            jumpTo(href){
-                this.rendition.display(href)
+            jumpTo(href) {
+                this.rendition.display(href).then(() => {
+                    this.showProgress()
+                })
                 this.hideTitltAndMenu()
             },
-            hideTitltAndMenu(){
+            hideTitltAndMenu() {
                 this.ifTitleAndMenuShow = false
                 this.$refs.menuBar.hideSetting()
                 this.$refs.menuBar.hideContent()
             },
-            onProgressChange(progress){
+            onProgressChange(progress) {
                 const percentage = progress / 100
                 const location = percentage > 0 ? this.locations.cfiFromPercentage(percentage) : 0
                 this.rendition.display(location)
@@ -132,12 +145,26 @@
             },
             prevPage() {
                 if (this.rendition) {
-                    this.rendition.prev()
+                    if (this.ifTitleAndMenuShow) {
+                        this.ifTitleAndMenuShow = false
+                        this.$refs.menuBar.hideSetting()
+                    } else {
+                        this.rendition.prev().then(() => {
+                            this.showProgress()
+                        })
+                    }
                 }
             },
             nextPage() {
                 if (this.rendition) {
-                    this.rendition.next()
+                    if (this.ifTitleAndMenuShow) {
+                        this.ifTitleAndMenuShow = false
+                        this.$refs.menuBar.hideSetting()
+                    } else {
+                        this.rendition.next().then(() => {
+                            this.showProgress()
+                        })
+                    }
                 }
             },
             // 电子书的解析和渲染
@@ -207,3 +234,4 @@
         }
     }
 </style>
+

@@ -54,6 +54,7 @@
                                @input="onProgressInput($event.target.value)"
                                :value="progress"
                                :disabled="!bookAvailable"
+                               :style="{backgroundSize: calcBackgroundSize}"
                                ref="progress"
                         >
                     </div>
@@ -91,7 +92,7 @@
                 ifSettingShow: false,
                 showTag: 0,
                 progress: 0,
-                ifShowContent: false
+                ifShowContent: false,
             }
         },
         props: {
@@ -107,13 +108,33 @@
                 type: Boolean,
                 default: false
             },
-            navigation: Object
+            navigation: Object,
+            parentProgress: Number
+        },
+        computed: {
+            calcBackgroundSize: function () {
+                return this.progress + `% 100%`
+            }
+        },
+        watch: {
+            // parentProgress: {
+            // handler: function (val) {
+            //     this.progress = val
+            //     if (this.bookAvailable && this.$refs.progress) {
+            //         this.$refs.progress.style.backgroundSize = `$(this.progress)% 100%`
+            //     }
+            // },
+            // deep: true
+            // }
+            parentProgress: function (val, oldval) {
+                this.onProgressInput(val)
+            }
         },
         methods: {
             hideContent() {
                 this.ifShowContent = false
             },
-            jumpTo(target){
+            jumpTo(target) {
                 this.$emit('jumpTo', target)
             },
             onProgressInput(progress) {

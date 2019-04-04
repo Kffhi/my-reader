@@ -33,7 +33,8 @@
     import TitleBar from './components/TitleBar'
     import MenuBar from './components/MenuBar'
 
-    const DOWNLOAD_URL = '/2018_Book_AgileProcessesInSoftwareEngine.epub'
+    const DOWNLOAD_URL = 'https://www.asgardusk.com/images/TooLoudaSolitude.epub'
+    // const DOWNLOAD_URL = '/TooLoudaSolitude.epub'
     global.ePub = Epub
     export default {
         name: "Ebook",

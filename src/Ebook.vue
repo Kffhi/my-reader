@@ -20,6 +20,8 @@
                  @setTheme="setTheme"
                  :bookAvailable="bookAvailable"
                  @onProgressChange="onProgressChange"
+                 :navigation="navigation"
+                 @jumpTo="jumpTo"
 
         >
         </MenuBar>
@@ -91,6 +93,16 @@
             }
         },
         methods: {
+            // 根据链接跳转至指定位置
+            jumpTo(href){
+                this.rendition.display(href)
+                this.hideTitltAndMenu()
+            },
+            hideTitltAndMenu(){
+                this.ifTitleAndMenuShow = false
+                this.$refs.menuBar.hideSetting()
+                this.$refs.menuBar.hideContent()
+            },
             onProgressChange(progress){
                 const percentage = progress / 100
                 const location = percentage > 0 ? this.locations.cfiFromPercentage(percentage) : 0
@@ -149,6 +161,7 @@
                 // 获取Locations对象
                 // 通过epubjs的钩子函数实现
                 this.book.ready.then(() => {
+                    this.navigation = this.book.navigation
                     return this.book.locations.generate()
                 }).then(result => {
                     this.locations = this.book.locations

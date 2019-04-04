@@ -84,7 +84,11 @@
             fontSizeList: Array,
             defaultFontSize: Number,
             themeList: Array,
-            defaultTheme: Number
+            defaultTheme: Number,
+            bookAvailable: {
+                type: Boolean,
+                default: false
+            }
         },
         methods: {
             onProgressInput(progress) {
@@ -290,6 +294,16 @@
                             box-shadow: 0 4px 4px 0 rgba(0, 0, 0, .15);
                             border: #ddd solid px2rem(1);
                         }
+                    }
+                }
+                .text-wrapper {
+                    position: absolute;
+                    bottom: 0;
+                    width: 100%;
+                    color: #333;
+                    font-size: px2rem(12);
+                    span{
+                        @include center;
                     }
                 }
             }

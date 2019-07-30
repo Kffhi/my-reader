@@ -34,7 +34,7 @@
     import TitleBar from './components/TitleBar'
     import MenuBar from './components/MenuBar'
 
-    const DOWNLOAD_URL = 'https://www.asgardusk.com/images/TooLoudaSolitude.epub'
+    const DOWNLOAD_URL = 'https://www.kffhi.com/public/file/TooLoudaSolitude.epub'
     // const DOWNLOAD_URL = '/TooLoudaSolitude.epub'
     global.ePub = Epub
     export default {
